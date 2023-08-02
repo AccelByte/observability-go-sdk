@@ -17,12 +17,14 @@ func main() {
 		[]string{"game_namespace", "matchpool"},
 	)
 
-	go sendExistingGoroutinesCountPeriodically(totalSession)
+	metrics.Initialize("test_service")
+
+	go sendCustomPeriodically(totalSession)
 	http.Handle("/metrics", metrics.PrometheusHandler())
 	http.ListenAndServe(":8080", nil)
 }
 
-func sendExistingGoroutinesCountPeriodically(totalSession metrics.CounterVecMetric) {
+func sendCustomPeriodically(totalSession metrics.CounterVecMetric) {
 	ticker := time.NewTicker(2 * time.Second)
 	quit := make(chan struct{})
 	defer func() {

@@ -4,7 +4,15 @@
 
 package metrics
 
-var defaultProvider Provider = NewPrometheusProvider(PrometheusProviderOpts{})
+import (
+	"fmt"
+	"runtime/metrics"
+)
+
+var (
+	defaultProvider Provider = NewPrometheusProvider(PrometheusProviderOpts{})
+	serviceName     string
+)
 
 // CounterVecMetric represents a vector counter metric containing a variation
 // of the same metric under different labels.
@@ -53,6 +61,32 @@ type Provider interface {
 	NewSummary(name, help string, labels ...string) ObserverVecMetric
 }
 
+func Initialize(s string) {
+	serviceName = s
+	initializeRuntimeMetrics()
+}
+
+func initializeRuntimeMetrics() {
+	runtimeMetricsGaugeMap = make(map[string]GaugeMetric)
+	runtimeMetricsHistogram = make(map[string]ObserverMetric)
+
+	descs := metrics.All()
+	for _, desc := range descs {
+		switch desc.Kind {
+		case metrics.KindUint64, metrics.KindFloat64:
+			runtimeMetricsGaugeMap[desc.Name] = Gauge(generateMetricsName(desc.Name), desc.Description)
+		case metrics.KindFloat64Histogram:
+			runtimeMetricsHistogram[desc.Name] = Histogram(generateMetricsName(desc.Name), desc.Description)
+		}
+	}
+
+	go sendRuntimeMetrics()
+}
+
+func generateMetricsName(metricsName string) string {
+	return fmt.Sprintf(metricsNameFormat, serviceName, metricsName)
+}
+
 // SetProvider allow setting/replacing the default (Prometheus) metrics provider with a new one.
 func SetProvider(p Provider) {
 	defaultProvider = p
@@ -77,8 +111,8 @@ func CounterVec(name string, help string, labels []string) CounterVecMetric {
 // Gauge creates a gauge metric with default provider.
 // Use this function, if the metric does not have any custom dynamic labels,
 // which also gives the caller direct access to a GaugeMetric.
-func Gauge(name string, help string, labels []string) GaugeMetric {
-	return defaultProvider.NewGauge(name, help, labels...).With(map[string]string{})
+func Gauge(name string, help string) GaugeMetric {
+	return defaultProvider.NewGauge(name, help).With(map[string]string{})
 
 }
 
@@ -96,8 +130,8 @@ func GaugeVec(name string, help string, labels []string) GaugeVecMetric {
 // which also gives the caller direct access to a ObserverMetric (histogram).
 // This will use the default buckets for a histogram:
 // []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
-func Histogram(name string, help string, labels []string) ObserverMetric {
-	return defaultProvider.NewHistogram(name, help, []float64{}, labels...).With(map[string]string{})
+func Histogram(name string, help string) ObserverMetric {
+	return defaultProvider.NewHistogram(name, help, []float64{}).With(map[string]string{})
 }
 
 // HistogramWithBuckets creates a histogram metric with default provider.

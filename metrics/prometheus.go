@@ -48,7 +48,7 @@ type PrometheusProvider struct {
 func (p PrometheusProvider) NewCounter(name, help string, labels ...string) CounterVecMetric {
 	vec := promauto.With(p.registerer).NewCounterVec(
 		prometheus.CounterOpts{
-			Name: name,
+			Name: sanitizeName(name),
 			Help: help,
 		},
 		labels,
@@ -69,7 +69,7 @@ func (c counterVec) With(labels map[string]string) CounterMetric {
 func (p PrometheusProvider) NewGauge(name, help string, labels ...string) GaugeVecMetric {
 	vec := promauto.With(p.registerer).NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: name,
+			Name: sanitizeName(name),
 			Help: help,
 		},
 		labels,
@@ -93,7 +93,7 @@ func (p PrometheusProvider) NewHistogram(name, help string, buckets []float64, l
 	}
 	vec := promauto.With(p.registerer).NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    name,
+			Name:    sanitizeName(name),
 			Help:    help,
 			Buckets: buckets,
 		},
@@ -115,7 +115,7 @@ func (h histogramVec) With(labels map[string]string) ObserverMetric {
 func (p PrometheusProvider) NewSummary(name, help string, labels ...string) ObserverVecMetric {
 	vec := promauto.With(p.registerer).NewSummaryVec(
 		prometheus.SummaryOpts{
-			Name: name,
+			Name: sanitizeName(name),
 			Help: help,
 		},
 		labels,
@@ -146,4 +146,16 @@ func PrometheusHandler() http.Handler {
 		registerer,
 		promhttp.HandlerFor(gatherer, promhttp.HandlerOpts{}),
 	)
+}
+
+func sanitizeName(name string) string {
+	output := []rune(name)
+
+	for i, b := range name {
+		if !((b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || b == '_' || b == ':' || (b >= '0' && b <= '9' && i > 0)) {
+			output[i] = '_'
+		}
+	}
+
+	return string(output)
 }
