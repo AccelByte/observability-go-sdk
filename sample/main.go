@@ -17,7 +17,7 @@ func main() {
 		[]string{"game_namespace", "matchpool"},
 	)
 
-	metrics.Initialize("test_service")
+	metrics.Initialize("test_service", nil)
 
 	go sendCustomPeriodically(totalSession)
 	http.Handle("/metrics", metrics.PrometheusHandler())

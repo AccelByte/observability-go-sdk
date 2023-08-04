@@ -10,8 +10,12 @@ import (
 )
 
 var (
-	defaultProvider Provider = NewPrometheusProvider(PrometheusProviderOpts{})
-	serviceName     string
+	defaultProvider        Provider = NewPrometheusProvider(PrometheusProviderOpts{})
+	serviceName            string
+	namespacePathParameter string
+	enableRuntimeMetrics   bool
+
+	httpMetrics ObserverVecMetric
 )
 
 // CounterVecMetric represents a vector counter metric containing a variation
@@ -61,12 +65,52 @@ type Provider interface {
 	NewSummary(name, help string, labels ...string) ObserverVecMetric
 }
 
-func Initialize(s string) {
-	serviceName = s
-	initializeRuntimeMetrics()
+type Opts struct {
+	Namespace            string
+	EnableRuntimeMetrics bool
+	EnableHTTPMetrics    bool
+
+	HTTPMetrics *ObserverVecMetric
 }
 
-func initializeRuntimeMetrics() {
+func Initialize(s string, option *Opts) {
+	serviceName = s
+
+	initializeDefaultOption()
+
+	if option != nil {
+		overrideDefaultOption(option)
+	}
+
+	if enableRuntimeMetrics {
+		startRuntimeMetrics()
+	}
+}
+
+func initializeDefaultOption() {
+	namespacePathParameter = defaultNamespacePathParameter
+
+	httpMetrics = HistogramVecWithBuckets(
+		generateMetricsName(metricsNameHTTP),
+		"HTTP request in histogram",
+		[]float64{0.25, 0.5, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3},
+		[]string{labelNamespace, labelPath, labelMethod, labelResponseCode},
+	)
+}
+
+func overrideDefaultOption(option *Opts) {
+	if option.Namespace != "" {
+		namespacePathParameter = option.Namespace
+	}
+	if !option.EnableRuntimeMetrics {
+		enableRuntimeMetrics = false
+	}
+	if option.HTTPMetrics != nil {
+		httpMetrics = *option.HTTPMetrics
+	}
+}
+
+func startRuntimeMetrics() {
 	runtimeMetricsGaugeMap = make(map[string]GaugeMetric)
 	runtimeMetricsHistogram = make(map[string]ObserverMetric)
 
