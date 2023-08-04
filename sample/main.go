@@ -5,10 +5,13 @@
 package main
 
 import (
-	"github.com/AccelByte/observability-go-sdk/metrics"
-	"net/http"
 	"time"
+
+	"github.com/AccelByte/observability-go-sdk/metrics"
+	"github.com/AccelByte/observability-go-sdk/sample/api"
 )
+
+const BASE_PATH = "/sampleservice"
 
 func main() {
 	totalSession := metrics.CounterVec(
@@ -20,8 +23,7 @@ func main() {
 	metrics.Initialize("test_service")
 
 	go sendCustomPeriodically(totalSession)
-	http.Handle("/metrics", metrics.PrometheusHandler())
-	http.ListenAndServe(":8080", nil)
+	api.InitWebService(BASE_PATH).Serve()
 }
 
 func sendCustomPeriodically(totalSession metrics.CounterVecMetric) {
