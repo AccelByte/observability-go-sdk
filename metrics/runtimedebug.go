@@ -11,8 +11,6 @@ import (
 	"runtime/pprof"
 	"strings"
 
-	auth "github.com/AccelByte/go-restful-plugins/v4/pkg/auth/iam"
-	"github.com/AccelByte/iam-go-sdk"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/sirupsen/logrus"
 )
@@ -20,38 +18,6 @@ import (
 const (
 	defaultProfile = "goroutine"
 )
-
-type RuntimeDebugRouteProvider interface {
-	WebService(authFilter *auth.Filter) *restful.WebService
-}
-
-type runtimeDebugRoute struct {
-	basePath string
-}
-
-func NewRuntimeDebugRoute(basePath string) *runtimeDebugRoute {
-	return &runtimeDebugRoute{basePath: basePath}
-}
-
-func (r *runtimeDebugRoute) WebService(authFilter *auth.Filter) *restful.WebService {
-	webService := new(restful.WebService)
-
-	defaultPermission := &iam.Permission{
-		Resource: "ADMIN:SYSTEM:DEBUG",
-		Action:   2,
-	}
-
-	webService.Route(webService.
-		GET(r.basePath + "/admin/internal/runtimedebug").
-		To(runtimeDebugHandlerFunc).
-		Filter(
-			authFilter.Auth(
-				auth.WithPermission(defaultPermission),
-			),
-		))
-
-	return webService
-}
 
 func runtimeDebugHandlerFunc(req *restful.Request, res *restful.Response) {
 	profile := req.QueryParameter("profile")

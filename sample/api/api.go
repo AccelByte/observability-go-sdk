@@ -1,3 +1,7 @@
+// Copyright (c) 2023 AccelByte Inc. All Rights Reserved.
+// This is licensed software from AccelByte Inc, for limitations
+// and restrictions contact your company contract manager.
+
 package api
 
 import (
@@ -33,10 +37,13 @@ func InitWebService(basePath string) *WebService {
 func newServiceContainer(basePath string, authFilter *auth.Filter) *restful.Container {
 	container := restful.NewContainer()
 
-	// register metrics route
-	container.Handle(basePath+"/metrics", metrics.PrometheusHandler())
-	// register runtime debug route
-	container.Add(metrics.NewRuntimeDebugRoute(basePath).WebService(authFilter))
+	// register metrics and runtime debug routes
+	container.Add(metrics.
+		NewWebService(basePath).
+		MetricsRoute(metrics.DefaultMetricsHandler).
+		RuntimeDebugRoute(authFilter).
+		WebService())
+
 	return container
 }
 
