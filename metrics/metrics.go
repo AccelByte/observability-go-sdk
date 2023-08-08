@@ -89,6 +89,7 @@ func Initialize(s string, option *Opts) {
 
 func initializeDefaultOption() {
 	namespacePathParameter = defaultNamespacePathParameter
+	enableRuntimeMetrics = true
 
 	httpMetrics = HistogramVecWithBuckets(
 		generateMetricsName(metricsNameHTTP),
