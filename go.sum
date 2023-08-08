@@ -13,6 +13,7 @@ github.com/AccelByte/iam-go-sdk v1.1.2/go.mod h1:M1Eplqpph/Msxm7XKgZRI+cYBCCChFd
 github.com/AccelByte/iam-go-sdk v1.8.1 h1:08ZKbemfAsEzdoxUEsXQFYkwam08OUiLL00EUcJ4l18=
 github.com/AccelByte/iam-go-sdk v1.8.1/go.mod h1:NA4n8yx/WU+BqdserLE/xaECC+2BSm6Buxli1PbYarg=
 github.com/AccelByte/public-source-ip v1.0.0/go.mod h1:L7zIgt3UaXkGH7NoKFCbxPdWZOVwn+d6uW/5yYRXtnQ=
+github.com/AccelByte/public-source-ip v1.0.1 h1:6/VAkksqXFmuonsvsZfIkJfsoBVy3bSy9LLHwiCqlxc=
 github.com/AccelByte/public-source-ip v1.0.1/go.mod h1:L7zIgt3UaXkGH7NoKFCbxPdWZOVwn+d6uW/5yYRXtnQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=

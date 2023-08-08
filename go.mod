@@ -15,6 +15,7 @@ require (
 	github.com/AccelByte/bloom v0.0.0-20180915202807-98c052463922 // indirect
 	github.com/AccelByte/go-jose v2.1.4+incompatible // indirect
 	github.com/AccelByte/go-restful-plugins/v3 v3.2.2 // indirect
+	github.com/AccelByte/public-source-ip v1.0.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
