@@ -10,7 +10,7 @@ const (
 
 	defaultNamespacePathParameter = "namespace"
 
-	labelNamespace    = "game_namespace"
+	labelNamespace    = "namespace"
 	labelPath         = "path"
 	labelMethod       = "method"
 	labelResponseCode = "response_code"
