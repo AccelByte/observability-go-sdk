@@ -17,7 +17,7 @@ func main() {
 	totalSession := metrics.CounterVec(
 		"ab_session_total_session",
 		"The total number of available session",
-		[]string{"game_namespace", "matchpool"},
+		[]string{"namespace", "matchpool"},
 	)
 
 	metrics.Initialize("test_service", nil)
@@ -36,7 +36,7 @@ func sendCustomPeriodically(totalSession metrics.CounterVecMetric) {
 	for {
 		select {
 		case <-ticker.C:
-			totalSession.With(map[string]string{"game_namespace": "test", "matchpool": "asdf"}).Add(float64(5))
+			totalSession.With(map[string]string{"namespace": "test", "matchpool": "asdf"}).Add(float64(5))
 
 		case <-quit:
 			return
