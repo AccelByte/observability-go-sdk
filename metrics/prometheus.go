@@ -123,6 +123,23 @@ func (p PrometheusProvider) NewSummary(name, help string, labels ...string) Obse
 	return summaryVec{vec}
 }
 
+// initBuildInfo initializes one gauge metric with constant 1
+func (p PrometheusProvider) initBuildInfo(buildInfo BuildInfo) {
+	buildInfoGauge := promauto.With(p.registerer).NewGauge(
+		prometheus.GaugeOpts{
+			Name: generateMetricsName("build_info"),
+			Help: "A metric with a constant '1' value labeled by version, revision, branch, and goversion from which the service was built",
+			ConstLabels: prometheus.Labels{
+				"revisionID":         buildInfo.RevisionID,
+				"buildDate":          buildInfo.BuildDate,
+				"version":            buildInfo.Version,
+				"gitHash":            buildInfo.GitHash,
+				"roleSeedingVersion": buildInfo.RoleSeedingVersion,
+			},
+		})
+	buildInfoGauge.Set(1)
+}
+
 // summaryVec represents an internal summary vec type that implements ObserverVecMetric
 type summaryVec struct {
 	*prometheus.SummaryVec

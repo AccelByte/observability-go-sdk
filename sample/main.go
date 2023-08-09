@@ -20,7 +20,13 @@ func main() {
 		[]string{"namespace", "matchpool"},
 	)
 
-	metrics.Initialize("test_service", nil)
+	metrics.Initialize("test_service", metrics.BuildInfo{
+		RevisionID:         "a41133",
+		BuildDate:          time.Now().String(),
+		Version:            "1.1.0",
+		GitHash:            "a41133",
+		RoleSeedingVersion: "1.0.0",
+	}, nil)
 
 	go sendCustomPeriodically(totalSession)
 	api.InitWebService(BASE_PATH).Serve()
