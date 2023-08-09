@@ -13,6 +13,7 @@ import (
 	"time"
 
 	auth "github.com/AccelByte/go-restful-plugins/v4/pkg/auth/iam"
+	logger "github.com/AccelByte/go-restful-plugins/v4/pkg/logger/log"
 	"github.com/AccelByte/iam-go-sdk"
 	"github.com/AccelByte/observability-go-sdk/metrics"
 	"github.com/emicklei/go-restful/v3"
@@ -24,17 +25,14 @@ func InitWebService(basePath string) *WebService {
 	authFilterOptions := auth.FilterInitializationOptionsFromEnv()
 	authFilter := auth.NewFilterWithOptions(iamClient, authFilterOptions)
 
-	serviceContainer := newServiceContainer(basePath, authFilter)
+	bansDAO := NewBansDAO()
+	h := newHandlers(bansDAO)
+
+	serviceContainer := newServiceContainer(basePath, authFilter, h)
 	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", "8080"))
 	if err != nil {
 		log.Fatalf("unable to listen on port 8080: %s", err.Error())
 	}
-
-	// register mock API that will return random response code with random response time
-	serviceContainer.Add(addMockAPI(basePath))
-
-	// register filter to send http metrics
-	serviceContainer.Filter(metrics.RestfulFilter())
 
 	return &WebService{
 		serviceContainer: serviceContainer,
@@ -42,8 +40,11 @@ func InitWebService(basePath string) *WebService {
 	}
 }
 
-func newServiceContainer(basePath string, authFilter *auth.Filter) *restful.Container {
+func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) *restful.Container {
 	container := restful.NewContainer()
+
+	// register filter to send http metrics
+	container.Filter(metrics.RestfulFilter())
 
 	// register metrics and runtime debug routes
 	container.Add(metrics.
@@ -52,7 +53,30 @@ func newServiceContainer(basePath string, authFilter *auth.Filter) *restful.Cont
 		RuntimeDebugRoute(authFilter).
 		WebService())
 
+	container.Add(bansService(basePath, h))
+
+	// register mock API that will return random response code with random response time
+	container.Add(addMockAPI(basePath))
+
 	return container
+}
+
+func bansService(basePath string, h *handlers) *restful.WebService {
+	webService := new(restful.WebService)
+	webService.Path(basePath + "/bans")
+	webService.Filter(logger.AccessLog)
+
+	// POST {basePath}/bans
+	webService.Route(webService.
+		POST("").
+		To(h.AddBan))
+
+	// GET {basePath}/bans/{banId}
+	webService.Route(webService.
+		GET("/{banId}").
+		To(h.GetBan))
+
+	return webService
 }
 
 type WebService struct {

@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	defaultProvider        Provider = NewPrometheusProvider(PrometheusProviderOpts{})
+	DefaultProvider        Provider = NewPrometheusProvider(PrometheusProviderOpts{})
 	serviceName            string
 	namespacePathParameter string
 	enableRuntimeMetrics   bool
@@ -134,14 +134,14 @@ func generateMetricsName(metricsName string) string {
 
 // SetProvider allow setting/replacing the default (Prometheus) metrics provider with a new one.
 func SetProvider(p Provider) {
-	defaultProvider = p
+	DefaultProvider = p
 }
 
 // Counter creates a counter metric with default provider.
 // Use this function, if the metric does not have any custom dynamic labels,
 // which also gives the caller direct access to a CounterMetric.
 func Counter(name string, help string) CounterMetric {
-	return defaultProvider.NewCounter(name, help).With(map[string]string{})
+	return DefaultProvider.NewCounter(name, help).With(map[string]string{})
 }
 
 // CounterVec creates a counter vector metric with default provider.
@@ -150,14 +150,14 @@ func Counter(name string, help string) CounterMetric {
 // .With(map[string]string{"label_name": "label_value"}), which then
 // gives the caller access to a CounterMetric to work with.
 func CounterVec(name string, help string, labels []string) CounterVecMetric {
-	return defaultProvider.NewCounter(name, help, labels...)
+	return DefaultProvider.NewCounter(name, help, labels...)
 }
 
 // Gauge creates a gauge metric with default provider.
 // Use this function, if the metric does not have any custom dynamic labels,
 // which also gives the caller direct access to a GaugeMetric.
 func Gauge(name string, help string) GaugeMetric {
-	return defaultProvider.NewGauge(name, help).With(map[string]string{})
+	return DefaultProvider.NewGauge(name, help).With(map[string]string{})
 
 }
 
@@ -167,7 +167,7 @@ func Gauge(name string, help string) GaugeMetric {
 // .With(map[string]string{"label_name": "label_value"}), which then
 // gives the caller access to a GaugeMetric to work with.
 func GaugeVec(name string, help string, labels []string) GaugeVecMetric {
-	return defaultProvider.NewGauge(name, help, labels...)
+	return DefaultProvider.NewGauge(name, help, labels...)
 }
 
 // Histogram creates a histogram metric with default provider.
@@ -176,14 +176,14 @@ func GaugeVec(name string, help string, labels []string) GaugeVecMetric {
 // This will use the default buckets for a histogram:
 // []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
 func Histogram(name string, help string) ObserverMetric {
-	return defaultProvider.NewHistogram(name, help, []float64{}).With(map[string]string{})
+	return DefaultProvider.NewHistogram(name, help, []float64{}).With(map[string]string{})
 }
 
 // HistogramWithBuckets creates a histogram metric with default provider.
 // User this function if the metric does not have any custom dynamic labels,
 // but you want to specify custom buckets other than the default.
 func HistogramWithBuckets(name, help string, buckets []float64) ObserverMetric {
-	return defaultProvider.NewHistogram(name, help, buckets, []string{}...).With(map[string]string{})
+	return DefaultProvider.NewHistogram(name, help, buckets, []string{}...).With(map[string]string{})
 }
 
 // HistogramVec creates a histogram vector metric with default provider.
@@ -194,7 +194,7 @@ func HistogramWithBuckets(name, help string, buckets []float64) ObserverMetric {
 // This will use the default buckets for a histogram:
 // []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
 func HistogramVec(name string, help string, labels []string) ObserverVecMetric {
-	return defaultProvider.NewHistogram(name, help, []float64{}, labels...)
+	return DefaultProvider.NewHistogram(name, help, []float64{}, labels...)
 }
 
 // HistogramVecWithBuckets creates a histogram vector metric with default provider.
@@ -203,14 +203,14 @@ func HistogramVec(name string, help string, labels []string) ObserverVecMetric {
 // HistogramVec, you will need the extra step of calling the object with
 // .With(map[string]string{"label_name": "label_value"})
 func HistogramVecWithBuckets(name, help string, buckets []float64, labels []string) ObserverVecMetric {
-	return defaultProvider.NewHistogram(name, help, buckets, labels...)
+	return DefaultProvider.NewHistogram(name, help, buckets, labels...)
 }
 
 // Summary creates a summary metric with default provider.
 // Use this function, if the metric does not have any custom dynamic labels,
 // which also gives the caller direct access to a ObserverMetric (summary).
 func Summary(name string, help string) ObserverMetric {
-	return defaultProvider.NewSummary(name, help).With(map[string]string{})
+	return DefaultProvider.NewSummary(name, help).With(map[string]string{})
 }
 
 // SummaryVec creates a summary vector metric with default provider.
@@ -219,5 +219,5 @@ func Summary(name string, help string) ObserverMetric {
 // .With(map[string]string{"label_name": "label_value"}), which then
 // gives the caller access to a ObserverMetric (summary) to work with.
 func SummaryVec(name string, help string, labels []string) ObserverVecMetric {
-	return defaultProvider.NewSummary(name, help, labels...)
+	return DefaultProvider.NewSummary(name, help, labels...)
 }

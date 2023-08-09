@@ -22,6 +22,7 @@ type serviceBuilder struct {
 	webService *restful.WebService
 }
 
+// NewWebService returns new metrics web service builder
 func NewWebService(basePath string) *serviceBuilder {
 	webService := new(restful.WebService)
 	webService.Path(basePath + "/admin/internal")
