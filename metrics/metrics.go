@@ -63,17 +63,25 @@ type Provider interface {
 	NewGauge(name, help string, labels ...string) GaugeVecMetric
 	NewHistogram(name, help string, buckets []float64, labels ...string) ObserverVecMetric
 	NewSummary(name, help string, labels ...string) ObserverVecMetric
+	initBuildInfo(info BuildInfo)
+}
+
+type BuildInfo struct {
+	RevisionID,
+	BuildDate,
+	Version,
+	GitHash,
+	RoleSeedingVersion string
 }
 
 type Opts struct {
-	Namespace            string
+	NamespacePath        string
 	EnableRuntimeMetrics bool
-	EnableHTTPMetrics    bool
 
-	HTTPMetrics *ObserverVecMetric
+	CustomHTTPMetrics *ObserverVecMetric
 }
 
-func Initialize(s string, option *Opts) {
+func Initialize(s string, buildInfo BuildInfo, option *Opts) {
 	serviceName = s
 
 	initializeDefaultOption()
@@ -81,6 +89,8 @@ func Initialize(s string, option *Opts) {
 	if option != nil {
 		overrideDefaultOption(option)
 	}
+
+	DefaultProvider.initBuildInfo(buildInfo)
 
 	if enableRuntimeMetrics {
 		startRuntimeMetrics()
@@ -100,14 +110,14 @@ func initializeDefaultOption() {
 }
 
 func overrideDefaultOption(option *Opts) {
-	if option.Namespace != "" {
-		namespacePathParameter = option.Namespace
+	if option.NamespacePath != "" {
+		namespacePathParameter = option.NamespacePath
 	}
 	if !option.EnableRuntimeMetrics {
 		enableRuntimeMetrics = false
 	}
-	if option.HTTPMetrics != nil {
-		httpMetrics = *option.HTTPMetrics
+	if option.CustomHTTPMetrics != nil {
+		httpMetrics = *option.CustomHTTPMetrics
 	}
 }
 
