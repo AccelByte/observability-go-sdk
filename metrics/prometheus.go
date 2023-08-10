@@ -127,7 +127,7 @@ func (p PrometheusProvider) NewSummary(name, help string, labels ...string) Obse
 func (p PrometheusProvider) initBuildInfo(buildInfo BuildInfo) {
 	buildInfoGauge := promauto.With(p.registerer).NewGauge(
 		prometheus.GaugeOpts{
-			Name: generateMetricsName("build_info"),
+			Name: sanitizeName(generateMetricsName("build_info")),
 			Help: "A metric with a constant '1' value labeled by version, revision, branch, and goversion from which the service was built",
 			ConstLabels: prometheus.Labels{
 				"revisionID":         buildInfo.RevisionID,
