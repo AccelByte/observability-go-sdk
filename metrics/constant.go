@@ -5,8 +5,9 @@
 package metrics
 
 const (
-	metricsNameFormat = "ab_%s_%s"
-	metricsNameHTTP   = "total_request_http"
+	metricsNameFormat  = "ab_%s_%s"
+	metricsNameHTTP    = "request_http"
+	genericServiceName = "service"
 
 	defaultNamespacePathParameter = "namespace"
 

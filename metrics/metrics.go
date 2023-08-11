@@ -102,7 +102,7 @@ func initializeDefaultOption() {
 	enableRuntimeMetrics = true
 
 	httpMetrics = HistogramVecWithBuckets(
-		generateMetricsName(metricsNameHTTP),
+		generateMetricsName(genericServiceName, metricsNameHTTP),
 		"HTTP request in histogram",
 		[]float64{0.25, 0.5, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3},
 		[]string{labelNamespace, labelPath, labelMethod, labelResponseCode},
@@ -129,17 +129,17 @@ func startRuntimeMetrics() {
 	for _, desc := range descs {
 		switch desc.Kind {
 		case metrics.KindUint64, metrics.KindFloat64:
-			runtimeMetricsGaugeMap[desc.Name] = Gauge(generateMetricsName(desc.Name), desc.Description)
+			runtimeMetricsGaugeMap[desc.Name] = Gauge(generateMetricsName(genericServiceName, desc.Name), desc.Description)
 		case metrics.KindFloat64Histogram:
-			runtimeMetricsHistogram[desc.Name] = Histogram(generateMetricsName(desc.Name), desc.Description)
+			runtimeMetricsHistogram[desc.Name] = Histogram(generateMetricsName(genericServiceName, desc.Name), desc.Description)
 		}
 	}
 
 	go sendRuntimeMetrics()
 }
 
-func generateMetricsName(metricsName string) string {
-	return fmt.Sprintf(metricsNameFormat, serviceName, metricsName)
+func generateMetricsName(prefix, metricsName string) string {
+	return fmt.Sprintf(metricsNameFormat, prefix, metricsName)
 }
 
 // SetProvider allow setting/replacing the default (Prometheus) metrics provider with a new one.
