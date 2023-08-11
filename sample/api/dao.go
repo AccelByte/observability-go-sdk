@@ -12,6 +12,10 @@ import (
 	"github.com/AccelByte/observability-go-sdk/metrics"
 )
 
+var (
+	notFoundError = errors.New("not found")
+)
+
 type BansDAO struct {
 	inMem     map[string]Ban
 	dbMetrics *metrics.DBMetrics
@@ -29,9 +33,19 @@ func (b *BansDAO) AddBan(ban Ban) error {
 	}
 
 	addBanMetrics := b.dbMetrics.NewCall("add_ban")
-	time.Sleep(time.Duration(int64(rand.Float64()*2500)) * time.Millisecond) // simulate response time
+	defer addBanMetrics.CallEnded()
+
+	{ // simulate response time and timeout error
+		sleepTime := int64(rand.Float64() * 3000)
+		time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+
+		if sleepTime > 2000 {
+			addBanMetrics.Error()
+			return errors.New("request to DB failed")
+		}
+	}
+
 	b.inMem = map[string]Ban{ban.ID: ban}
-	addBanMetrics.CallEnded()
 
 	return nil
 }
@@ -39,10 +53,20 @@ func (b *BansDAO) AddBan(ban Ban) error {
 func (b *BansDAO) GetBan(banID string) (Ban, error) {
 	getBanMetrics := b.dbMetrics.NewCall("get_ban")
 	defer getBanMetrics.CallEnded()
-	time.Sleep(time.Duration(int64(rand.Float64()*2500)) * time.Millisecond) // simulate response time
+
+	{ // simulate response time and timeout error
+		sleepTime := int64(rand.Float64() * 3000)
+		time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+
+		if sleepTime > 2000 {
+			getBanMetrics.Error()
+			return Ban{}, errors.New("request to DB failed")
+		}
+	}
+
 	ban, exist := b.inMem[banID]
 	if !exist {
-		return Ban{}, errors.New("not found")
+		return Ban{}, notFoundError
 	}
 
 	return ban, nil
