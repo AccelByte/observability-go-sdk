@@ -6,6 +6,7 @@ require (
 	github.com/AccelByte/go-restful-plugins/v4 v4.16.1
 	github.com/AccelByte/iam-go-sdk v1.8.1
 	github.com/emicklei/go-restful/v3 v3.10.2
+	github.com/google/uuid v1.1.5
 	github.com/prometheus/client_golang v1.16.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.0
@@ -23,7 +24,6 @@ require (
 	github.com/emicklei/go-restful v2.15.0+incompatible // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.1.5 // indirect
 	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
