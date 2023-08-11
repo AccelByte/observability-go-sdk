@@ -29,7 +29,7 @@ func NewDBMetrics(metricsProvider Provider, dbName string, labels ...string) *DB
 }
 
 func generateDBMetricsName(dbName string) string {
-	return generateMetricsName(fmt.Sprintf("%s_db_latency_seconds", dbName))
+	return generateMetricsName(serviceName, fmt.Sprintf("%s_db_latency_seconds", dbName))
 }
 
 // NewCall returns a new DB call metrics and start it.
