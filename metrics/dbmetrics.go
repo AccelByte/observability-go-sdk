@@ -22,7 +22,7 @@ const (
 type DBMetrics struct {
 	dbName          string
 	metricsProvider Provider
-	latencyMetrics  *ObserverVecMetric
+	latencyMetrics  ObserverVecMetric
 }
 
 // NewDBMetrics returns new DB metrics.
@@ -33,7 +33,7 @@ func NewDBMetrics(metricsProvider Provider, dbName string, labels ...string) *DB
 	}
 	latencyMetrics := metricsProvider.NewHistogram(generateDBMetricsName(dbName),
 		fmt.Sprintf("Latency of %s in seconds", dbName), prometheus.DefBuckets, l...)
-	return &DBMetrics{metricsProvider: metricsProvider, latencyMetrics: &latencyMetrics}
+	return &DBMetrics{metricsProvider: metricsProvider, latencyMetrics: latencyMetrics}
 }
 
 func generateDBMetricsName(dbName string) string {
@@ -59,7 +59,7 @@ type dbCallMetrics struct {
 	startTime      time.Time
 	endTime        time.Time
 	labelsMap      map[string]string
-	latencyMetrics *ObserverVecMetric
+	latencyMetrics ObserverVecMetric
 }
 
 func (e *dbCallMetrics) start() {
@@ -68,7 +68,9 @@ func (e *dbCallMetrics) start() {
 
 // WithLabel attaches labels to the metrics.
 func (e *dbCallMetrics) WithLabel(labels map[string]string) *dbCallMetrics {
-	e.labelsMap = labels
+	for k, v := range labels {
+		e.labelsMap[k] = v
+	}
 	return e
 }
 
@@ -83,12 +85,11 @@ func (e *dbCallMetrics) Error() {
 func (e *dbCallMetrics) CallEnded() {
 	e.endTime = time.Now().UTC()
 	e.labelsMap[dbCallLabelAction] = e.action
-	e.labelsMap[dbCallLabelResult] = getResultLabel(e.isError)
-	latencyMetrics := *e.latencyMetrics
-	latencyMetrics.With(e.labelsMap).Observe(e.elapsed().Seconds())
+	e.labelsMap[dbCallLabelResult] = getResultLabelValue(e.isError)
+	e.latencyMetrics.With(e.labelsMap).Observe(e.elapsed().Seconds())
 }
 
-func getResultLabel(isError bool) string {
+func getResultLabelValue(isError bool) string {
 	if isError {
 		return dbCallResultError
 	}
