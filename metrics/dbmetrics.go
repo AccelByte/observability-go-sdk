@@ -11,6 +11,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+const (
+	dbCallLabelAction = "action"
+	dbCallLabelResult = "result"
+
+	dbCallResultSuccess = "success"
+	dbCallResultError   = "error"
+)
+
 type DBMetrics struct {
 	dbName          string
 	metricsProvider Provider
@@ -19,7 +27,7 @@ type DBMetrics struct {
 
 // NewDBMetrics returns new DB metrics.
 func NewDBMetrics(metricsProvider Provider, dbName string, labels ...string) *DBMetrics {
-	l := []string{"action"}
+	l := []string{dbCallLabelAction, dbCallLabelResult}
 	if len(labels) > 0 {
 		l = append(l, labels...)
 	}
@@ -47,6 +55,7 @@ func (d *DBMetrics) NewCall(action string) *dbCallMetrics {
 
 type dbCallMetrics struct {
 	action         string
+	isError        bool
 	startTime      time.Time
 	endTime        time.Time
 	labelsMap      map[string]string
@@ -63,13 +72,27 @@ func (e *dbCallMetrics) WithLabel(labels map[string]string) *dbCallMetrics {
 	return e
 }
 
-// CallEnded is the most important function that you need to call after a successful DB call.
+// Error is the function that you need to call after a DB call has failed/returned error.
+// It marks the metrics 'result' label as error.
+func (e *dbCallMetrics) Error() {
+	e.isError = true
+}
+
+// CallEnded is the most important function that you need to call after a DB call.
 // The metrics won't proceed without calling it.
 func (e *dbCallMetrics) CallEnded() {
 	e.endTime = time.Now().UTC()
-	e.labelsMap["action"] = e.action
+	e.labelsMap[dbCallLabelAction] = e.action
+	e.labelsMap[dbCallLabelResult] = getResultLabel(e.isError)
 	latencyMetrics := *e.latencyMetrics
 	latencyMetrics.With(e.labelsMap).Observe(e.elapsed().Seconds())
+}
+
+func getResultLabel(isError bool) string {
+	if isError {
+		return dbCallResultError
+	}
+	return dbCallResultSuccess
 }
 
 func (e *dbCallMetrics) elapsed() time.Duration {

@@ -48,11 +48,16 @@ func (h *handlers) GetBan(req *restful.Request, res *restful.Response) {
 	banID := req.PathParameter("banId")
 	ban, err := h.bansDAO.GetBan(banID)
 	if err != nil {
-		err = res.WriteErrorString(http.StatusNotFound, fmt.Sprintf("ban with ID %s not found", banID))
-		if err != nil {
-			res.WriteHeader(http.StatusInternalServerError)
+		if err == notFoundError {
+			err = res.WriteErrorString(http.StatusNotFound, fmt.Sprintf("ban with ID %s not found", banID))
+			if err != nil {
+				res.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 			return
 		}
+
+		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
