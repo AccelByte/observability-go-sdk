@@ -42,6 +42,7 @@ func InitWebService(basePath string) *WebService {
 
 func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) *restful.Container {
 	container := restful.NewContainer()
+	container.Filter(logger.AccessLog)
 
 	// register filter to send http metrics
 	container.Filter(metrics.RestfulFilter())
@@ -50,7 +51,7 @@ func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) 
 	container.Add(metrics.
 		NewWebService(basePath).
 		MetricsRoute(metrics.DefaultMetricsHandler).
-		RuntimeDebugRoute(authFilter).
+		RuntimeDebugRoute().
 		WebService())
 
 	container.Add(bansService(basePath, h))
