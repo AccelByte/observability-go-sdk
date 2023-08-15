@@ -5,11 +5,9 @@
 package metrics
 
 import (
+	"fmt"
 	"net/http"
 
-	auth "github.com/AccelByte/go-restful-plugins/v4/pkg/auth/iam"
-	"github.com/AccelByte/go-restful-plugins/v4/pkg/logger/log"
-	"github.com/AccelByte/iam-go-sdk"
 	"github.com/emicklei/go-restful/v3"
 )
 
@@ -26,7 +24,6 @@ type serviceBuilder struct {
 func NewWebService(basePath string) *serviceBuilder {
 	webService := new(restful.WebService)
 	webService.Path(basePath + "/admin/internal")
-	webService.Filter(log.AccessLog)
 
 	return &serviceBuilder{basePath: basePath, webService: webService}
 }
@@ -41,20 +38,10 @@ func (s *serviceBuilder) MetricsRoute(metricsHandler http.Handler) *serviceBuild
 	return s
 }
 
-func (s *serviceBuilder) RuntimeDebugRoute(authFilter *auth.Filter) *serviceBuilder {
-	defaultPermission := &iam.Permission{
-		Resource: "ADMIN:SYSTEM:DEBUG",
-		Action:   2,
-	}
-
+func (s *serviceBuilder) RuntimeDebugRoute() *serviceBuilder {
 	s.webService.Route(s.webService.
-		GET("/runtimedebug").
-		To(runtimeDebugHandlerFunc).
-		Filter(
-			authFilter.Auth(
-				auth.WithPermission(defaultPermission),
-			),
-		))
+		GET(fmt.Sprintf("/debug/pprof/{%s}", pprofPathParam)).
+		To(pprofHandlerFunc))
 
 	return s
 }
