@@ -20,13 +20,20 @@ func main() {
 		[]string{"namespace", "matchpool"},
 	)
 
+	metrics.SetProvider(metrics.NewPrometheusProvider(metrics.PrometheusProviderOpts{
+		DisableGoCollector:      true, // disable default go collector
+		DisableProcessCollector: true, // disable default process collector
+	}))
+
 	metrics.Initialize("test_service", metrics.BuildInfo{
 		RevisionID:         "a41133",
 		BuildDate:          time.Now().String(),
 		Version:            "1.1.0",
 		GitHash:            "a41133",
 		RoleSeedingVersion: "1.0.0",
-	}, nil)
+	}, &metrics.Opts{
+		EnableRuntimeMetrics: false, // set this to true or leave it empty to enable go runtime metrics
+	})
 
 	go sendCustomPeriodically(totalSession)
 	api.InitWebService(BASE_PATH).Serve()
