@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -21,6 +22,8 @@ var (
 type PrometheusProviderOpts struct {
 	prometheus.Registerer
 	prometheus.Gatherer
+	DisableGoCollector      bool // default is false = go collector is enabled
+	DisableProcessCollector bool // default is false = process collector is enabled
 }
 
 // NewPrometheusProvider creates a new Prometheus provider that implements Provider using Prometheus metrics.
@@ -35,6 +38,14 @@ func NewPrometheusProvider(opts PrometheusProviderOpts) PrometheusProvider {
 		registerer: registerer,
 		gatherer:   gatherer,
 	}
+
+	if opts.DisableProcessCollector {
+		prometheus.Unregister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+	}
+	if opts.DisableGoCollector {
+		prometheus.Unregister(collectors.NewGoCollector())
+	}
+
 	return p
 }
 
