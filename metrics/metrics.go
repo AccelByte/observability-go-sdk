@@ -104,7 +104,7 @@ func initializeDefaultOption() {
 	httpMetrics = HistogramVecWithBuckets(
 		generateMetricsName(genericServiceName, metricsNameHTTP),
 		"HTTP request in histogram",
-		[]float64{0.25, 0.5, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3},
+		[]float64{0.001, 0.01, 0.1, 0.5, 1, 1.5, 2, 3, 4, 5, 7.5, 10, 15, 20},
 		[]string{labelNamespace, labelPath, labelMethod, labelResponseCode},
 	)
 }
