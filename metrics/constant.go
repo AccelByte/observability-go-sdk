@@ -5,7 +5,7 @@
 package metrics
 
 const (
-	metricsNameFormat  = "ab_%s_%s"
+	metricsNameFormat  = "ab.%s_%s" // ab is the namespace and the next two placeholder is for service name and metrics name
 	metricsNameHTTP    = "request_http"
 	genericServiceName = "service"
 
