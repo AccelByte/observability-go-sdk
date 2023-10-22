@@ -5,10 +5,13 @@
 package main
 
 import (
+	"context"
+	"log"
 	"time"
 
 	"github.com/AccelByte/observability-go-sdk/metrics"
 	"github.com/AccelByte/observability-go-sdk/sample/api"
+	"github.com/AccelByte/observability-go-sdk/trace"
 )
 
 const BASE_PATH = "/sampleservice"
@@ -34,6 +37,14 @@ func main() {
 	}, &metrics.Opts{
 		EnableRuntimeMetrics: false, // set this to true or leave it empty to enable go runtime metrics
 	})
+
+	trace.Initialize("test_service", "observability-go-sdk")
+
+	clean, err := trace.SetUpTracer(context.Background(), "127.0.0.1:5555", time.Second*5)
+	if err != nil {
+		log.Fatalf("error set up otel tracer : %v", err.Error())
+	}
+	defer clean()
 
 	go sendCustomPeriodically(totalSession)
 	api.InitWebService(BASE_PATH).Serve()
