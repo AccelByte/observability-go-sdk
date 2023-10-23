@@ -95,7 +95,7 @@ func setupTraceproviderWithExporter(serviceName string, exporter sdktrace.SpanEx
 
 	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter), sdktrace.WithResource(resc))
 	otel.SetTracerProvider(tp)
-	propagationB3 := b3.New(b3.WithInjectEncoding(b3.B3MultipleHeader))
+	propagationB3 := b3.New(b3.WithInjectEncoding(b3.B3SingleHeader))
 
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}, propagationB3))
 	return tp, nil
