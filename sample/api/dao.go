@@ -5,11 +5,13 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"math/rand"
 	"time"
 
 	"github.com/AccelByte/observability-go-sdk/metrics"
+	"github.com/AccelByte/observability-go-sdk/trace"
 )
 
 var (
@@ -27,7 +29,10 @@ func NewBansDAO() *BansDAO {
 	return &BansDAO{dbMetrics: bansDAOMetrics}
 }
 
-func (b *BansDAO) AddBan(ban Ban) error {
+func (b *BansDAO) AddBan(ctx context.Context, ban Ban) error {
+	ctx, span := trace.NewChildSpan(ctx, "BansDAO.AddBan")
+	defer span.End()
+
 	if ban.ID == "" {
 		return errors.New("ID can't be empty")
 	}
@@ -50,7 +55,10 @@ func (b *BansDAO) AddBan(ban Ban) error {
 	return nil
 }
 
-func (b *BansDAO) GetBan(banID string) (Ban, error) {
+func (b *BansDAO) GetBan(ctx context.Context, banID string) (Ban, error) {
+	ctx, span := trace.NewAutoNamedChildSpan(ctx)
+	defer span.End()
+
 	getBanMetrics := b.dbMetrics.NewCall("get_ban")
 	defer getBanMetrics.CallEnded()
 

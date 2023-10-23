@@ -7,6 +7,8 @@ services:
   grafana:
     image: grafana/grafana-oss:latest
     container_name: grafana
+    volumes:
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     ports:
       - "3000:3000"
 
@@ -19,3 +21,32 @@ services:
       - ${PWD:-.}/prometheus.yml:/etc/prometheus/prometheus.yml
     extra_hosts:
       - host.docker.internal:host-gateway
+
+  otel-collector:
+    image: otel/opentelemetry-collector
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    ports:
+      - "5555:5555"
+      - "6666:6666"
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    depends_on:
+      - tempo
+      - prometheus
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  tempo:
+    image: grafana/tempo:1.5.0
+    command: [ "-search.enabled=true", "-config.file=/etc/tempo.yaml" ]
+    hostname: tempo
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - ./tempo-data:/tmp/tempo
+    ports:
+      - "3200:3200"   # tempo
+      - "4317:4317"  # otlp grpc
+    healthcheck:
+      interval: 5s
+      retries: 10
+      test: wget --no-verbose --tries=1 --spider http://localhost:3200/status || exit 1 

@@ -9,8 +9,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/attribute"
+	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
 type handlers struct {
@@ -22,9 +25,16 @@ func newHandlers(bansDAO *BansDAO) *handlers {
 }
 
 func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
+	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI, otelTrace.WithAttributes(
+		attribute.String("http.Method", req.Request.Method),
+		attribute.String("http.Path", req.Request.URL.Path),
+	))
+	defer span.End()
+
 	var payload AddBanRequest
 	err := req.ReadEntity(&payload)
 	if err != nil {
+		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -35,8 +45,9 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 		ExpiredAt: payload.ExpiredAt,
 	}
 
-	err = h.bansDAO.AddBan(ban)
+	err = h.bansDAO.AddBan(ctx, ban)
 	if err != nil {
+		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -45,24 +56,32 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 }
 
 func (h *handlers) GetBan(req *restful.Request, res *restful.Response) {
+	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI, otelTrace.WithAttributes(
+		attribute.String("http.Method", req.Request.Method),
+		attribute.String("http.Path", req.Request.URL.Path),
+	))
+	defer span.End()
+
 	banID := req.PathParameter("banId")
-	ban, err := h.bansDAO.GetBan(banID)
+	ban, err := h.bansDAO.GetBan(ctx, banID)
 	if err != nil {
 		if err == notFoundError {
 			err = res.WriteErrorString(http.StatusNotFound, fmt.Sprintf("ban with ID %s not found", banID))
 			if err != nil {
+				trace.LogTraceError(ctx, err, err.Error())
 				res.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			return
 		}
-
+		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = res.WriteHeaderAndJson(http.StatusOK, ban, restful.MIME_JSON)
 	if err != nil {
+		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}

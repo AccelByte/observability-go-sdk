@@ -1,0 +1,33 @@
+# Copyright (c) 2023 AccelByte Inc. All Rights Reserved.
+# This is licensed software from AccelByte Inc, for limitations
+# and restrictions contact your company contract manager.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:5555
+    
+exporters:
+  prometheus:
+    endpoint: collector:6666
+    namespace: default
+  otlp:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+processors:
+  batch:
+
+extensions:
+  health_check:
+  pprof:
+
+service:
+  extensions: [pprof, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
