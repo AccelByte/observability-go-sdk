@@ -14,7 +14,11 @@ import (
 	"github.com/AccelByte/observability-go-sdk/trace"
 )
 
-const BASE_PATH = "/sampleservice"
+const (
+	BASE_PATH               = "/sampleservice"
+	OTEL_COLLECTOR_ENDPOINT = "127.0.0.1:5555"
+	OTEL_COLLECTOR_TIMEOUT  = time.Second * 5
+)
 
 func main() {
 	totalSession := metrics.CounterVec(
@@ -40,7 +44,7 @@ func main() {
 
 	trace.Initialize("test_service", "observability-go-sdk")
 
-	clean, err := trace.SetUpTracer(context.Background(), "127.0.0.1:5555", time.Second*5)
+	clean, err := trace.SetUpTracer(context.Background(), OTEL_COLLECTOR_ENDPOINT, OTEL_COLLECTOR_TIMEOUT)
 	if err != nil {
 		log.Fatalf("error set up otel tracer : %v", err.Error())
 	}
