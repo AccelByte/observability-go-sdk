@@ -51,3 +51,6 @@ Thumbs.db
 # tempo
 /tempo-data
 
+# local
+vendor/
+

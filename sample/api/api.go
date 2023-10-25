@@ -17,6 +17,7 @@ import (
 	"github.com/AccelByte/iam-go-sdk"
 	"github.com/AccelByte/observability-go-sdk/metrics"
 	"github.com/emicklei/go-restful/v3"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful"
 )
 
 func InitWebService(basePath string) *WebService {
@@ -46,6 +47,9 @@ func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) 
 
 	// register filter to send http metrics
 	container.Filter(metrics.RestfulFilter())
+
+	// register otel http middleware
+	container.Filter(otelrestful.OTelFilter("observability-go-sdk"))
 
 	// register metrics and runtime debug routes
 	container.Add(metrics.

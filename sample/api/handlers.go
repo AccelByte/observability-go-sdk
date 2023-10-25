@@ -12,8 +12,6 @@ import (
 	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/attribute"
-	otelTrace "go.opentelemetry.io/otel/trace"
 )
 
 type handlers struct {
@@ -25,10 +23,7 @@ func newHandlers(bansDAO *BansDAO) *handlers {
 }
 
 func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
-	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI, otelTrace.WithAttributes(
-		attribute.String("http.Method", req.Request.Method),
-		attribute.String("http.Path", req.Request.URL.Path),
-	))
+	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI)
 	defer span.End()
 
 	var payload AddBanRequest
@@ -56,10 +51,7 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 }
 
 func (h *handlers) GetBan(req *restful.Request, res *restful.Response) {
-	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI, otelTrace.WithAttributes(
-		attribute.String("http.Method", req.Request.Method),
-		attribute.String("http.Path", req.Request.URL.Path),
-	))
+	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI)
 	defer span.End()
 
 	banID := req.PathParameter("banId")
