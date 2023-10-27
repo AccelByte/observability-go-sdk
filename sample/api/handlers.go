@@ -23,7 +23,7 @@ func newHandlers(bansDAO *BansDAO) *handlers {
 }
 
 func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
-	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI)
+	ctx, span := trace.NewChildSpan(req.Request.Context(), req.Request.RequestURI)
 	defer span.End()
 
 	var payload AddBanRequest
@@ -42,7 +42,6 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 
 	err = h.bansDAO.AddBan(ctx, ban)
 	if err != nil {
-		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -51,7 +50,7 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 }
 
 func (h *handlers) GetBan(req *restful.Request, res *restful.Response) {
-	ctx, span := trace.NewRootSpan(req.Request.Context(), req.Request.RequestURI)
+	ctx, span := trace.NewChildSpan(req.Request.Context(), req.Request.RequestURI)
 	defer span.End()
 
 	banID := req.PathParameter("banId")
@@ -66,7 +65,6 @@ func (h *handlers) GetBan(req *restful.Request, res *restful.Response) {
 			}
 			return
 		}
-		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
