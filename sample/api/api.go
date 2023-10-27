@@ -16,6 +16,7 @@ import (
 	logger "github.com/AccelByte/go-restful-plugins/v4/pkg/logger/log"
 	"github.com/AccelByte/iam-go-sdk"
 	"github.com/AccelByte/observability-go-sdk/metrics"
+	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful"
 )
@@ -50,6 +51,9 @@ func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) 
 
 	// register otel http middleware
 	container.Filter(otelrestful.OTelFilter("observability-go-sdk"))
+
+	// register to add userid and flightid in span attributes
+	container.Filter(trace.InstrumentCommonAttributes("test-service"))
 
 	// register metrics and runtime debug routes
 	container.Add(metrics.

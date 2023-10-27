@@ -23,7 +23,7 @@ services:
       - host.docker.internal:host-gateway
 
   otel-collector:
-    image: otel/opentelemetry-collector
+    image: otel/opentelemetry-collector-contrib
     command: [ "--config=/etc/otel-collector-config.yaml" ]
     ports:
       - "5555:5555"

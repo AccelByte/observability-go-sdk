@@ -45,8 +45,10 @@ func (b *BansDAO) AddBan(ctx context.Context, ban Ban) error {
 		time.Sleep(time.Duration(sleepTime) * time.Millisecond)
 
 		if sleepTime > 2000 {
+			err := errors.New("request to DB failed")
 			addBanMetrics.Error()
-			return errors.New("request to DB failed")
+			trace.LogTraceError(ctx, err, err.Error())
+			return err
 		}
 	}
 
@@ -67,8 +69,10 @@ func (b *BansDAO) GetBan(ctx context.Context, banID string) (Ban, error) {
 		time.Sleep(time.Duration(sleepTime) * time.Millisecond)
 
 		if sleepTime > 2000 {
+			err := errors.New("request to DB failed")
 			getBanMetrics.Error()
-			return Ban{}, errors.New("request to DB failed")
+			trace.LogTraceError(ctx, err, err.Error())
+			return Ban{}, err
 		}
 	}
 

@@ -19,23 +19,23 @@ exporters:
 
 processors:
   tail_sampling:
-    decision_wait: 10s
+    decision_wait: 30s
     policies:
       [
         {
           name: errors-only-policy,
-          type: status-code,
-          status-code: { status-code: [ERROR] }
+          type: status_code,
+          status_code: {status_codes: [ERROR]}
         },
         {
           name: latency-policy,
           type: latency,
-          latency: { threshold_ms: 2000 }
+          latency: {threshold_ms: 2000}
         },
         {
           name: randomized-policy,
           type: probabilistic,
-          probabilistic: { sampling_percentage: 25 }
+          probabilistic: {sampling_percentage: 25}
         },
       ]
 
