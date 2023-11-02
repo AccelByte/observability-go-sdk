@@ -40,6 +40,7 @@ func LogTraceError(ctx context.Context, err error, errMsg string, fields ...logr
 // errMsg: Message to be recorded. This message is also used as the span status description when error occurs.
 func TraceError(ctx context.Context, err error, errMsg string) {
 	span := SpanFromContext(ctx)
+	span.SetStatus(codes.Error, errMsg)
 	span.RecordError(err)
 }
 
