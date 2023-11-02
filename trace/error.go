@@ -32,6 +32,18 @@ func LogTraceError(ctx context.Context, err error, errMsg string, fields ...logr
 	span.RecordError(err)
 }
 
+// TraceError record the current error in trace span without log message.
+//
+// Parameters:
+// ctx: Context in which the function operates, it must contain a valid span.
+// err: Error to be and recorded. If this is nil, this method does nothing.
+// errMsg: Message to be recorded. This message is also used as the span status description when error occurs.
+func TraceError(ctx context.Context, err error, errMsg string) {
+	span := SpanFromContext(ctx)
+	span.SetStatus(codes.Error, errMsg)
+	span.RecordError(err)
+}
+
 // Helper function to merge multiple logrus.Fields dictionaries into one
 func mergeFields(fieldsSlice ...logrus.Fields) logrus.Fields {
 	result := logrus.Fields{}
