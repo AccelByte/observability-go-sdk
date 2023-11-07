@@ -19,8 +19,8 @@ import (
 // Parameters
 // tracerName: tracer name
 // excludeEndpoints: consists of blacklisted endpoint name to not send tracer
-// eg. key: /healthz value: http.Method (GET, POST, DELETE, PUT)
-func InstrumentCommonAttributes(tracerName string, excludeEndpoints map[string]string) (filterFunc restful.FilterFunction) {
+// eg. key: /healthz , key2: map of http.Method (GET, POST, DELETE, PUT) ,  value : boolean
+func InstrumentCommonAttributes(tracerName string, excludeEndpoints map[string]map[string]bool) (filterFunc restful.FilterFunction) {
 	return func(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
 		r := req.Request
 		ctx := otel.GetTextMapPropagator().Extract(r.Context(), propagation.HeaderCarrier(r.Header))
@@ -28,9 +28,11 @@ func InstrumentCommonAttributes(tracerName string, excludeEndpoints map[string]s
 		spanName := route
 
 		// end process if route = blacklisted endpoints
-		if _, exist := excludeEndpoints[route]; exist && r.Method == excludeEndpoints[route] {
-			chain.ProcessFilter(req, resp)
-			return
+		if _, exist := excludeEndpoints[route]; exist {
+			if excludeEndpoints[route][r.Method] {
+				chain.ProcessFilter(req, resp)
+				return
+			}
 		}
 
 		flightID := req.HeaderParameter(FlightID)

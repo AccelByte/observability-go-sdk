@@ -49,8 +49,11 @@ func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) 
 	container.Filter(metrics.RestfulFilter())
 
 	// register to add userid and flightid in span attributes
-	container.Filter(trace.InstrumentCommonAttributes("test-service", map[string]string{
-		"/sampleservice/bans/{banId}": http.MethodDelete,
+	container.Filter(trace.InstrumentCommonAttributes("test-service", map[string]map[string]bool{
+		"/sampleservice/bans/{banId}": {
+			http.MethodDelete: true,
+			http.MethodGet:    true,
+		},
 	}))
 
 	// register metrics and runtime debug routes
