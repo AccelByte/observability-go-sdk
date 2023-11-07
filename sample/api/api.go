@@ -52,7 +52,6 @@ func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) 
 	container.Filter(trace.InstrumentCommonAttributes("test-service", map[string]map[string]bool{
 		"/sampleservice/bans/{banId}": {
 			http.MethodDelete: true,
-			http.MethodGet:    true,
 		},
 	}))
 
