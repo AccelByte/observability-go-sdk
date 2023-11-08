@@ -83,3 +83,28 @@ func (b *BansDAO) GetBan(ctx context.Context, banID string) (Ban, error) {
 
 	return ban, nil
 }
+
+func (b *BansDAO) DeleteBan(ctx context.Context, banID string) error {
+	if banID == "" {
+		return errors.New("ID can't be empty")
+	}
+
+	addBanMetrics := b.dbMetrics.NewCall("delete_ban")
+	defer addBanMetrics.CallEnded()
+
+	{ // simulate response time and timeout error
+		sleepTime := int64(rand.Float64() * 3000)
+		time.Sleep(time.Duration(sleepTime) * time.Millisecond)
+
+		if sleepTime > 2000 {
+			err := errors.New("request to DB failed")
+			addBanMetrics.Error()
+			trace.LogTraceError(ctx, err, err.Error())
+			return err
+		}
+	}
+
+	delete(b.inMem, banID)
+
+	return nil
+}

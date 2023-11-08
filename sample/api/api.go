@@ -18,7 +18,6 @@ import (
 	"github.com/AccelByte/observability-go-sdk/metrics"
 	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful"
 )
 
 func InitWebService(basePath string) *WebService {
@@ -49,11 +48,12 @@ func newServiceContainer(basePath string, authFilter *auth.Filter, h *handlers) 
 	// register filter to send http metrics
 	container.Filter(metrics.RestfulFilter())
 
-	// register otel http middleware
-	container.Filter(otelrestful.OTelFilter("observability-go-sdk"))
-
 	// register to add userid and flightid in span attributes
-	container.Filter(trace.InstrumentCommonAttributes("test-service"))
+	container.Filter(trace.InstrumentCommonAttributes("test-service", map[string]map[string]bool{
+		"/sampleservice/bans/{banId}": {
+			http.MethodDelete: true,
+		},
+	}))
 
 	// register metrics and runtime debug routes
 	container.Add(metrics.
@@ -84,6 +84,11 @@ func bansService(basePath string, h *handlers) *restful.WebService {
 	webService.Route(webService.
 		GET("/{banId}").
 		To(h.GetBan))
+
+	// DELETE {basePath}/bans/{banId}
+	webService.Route(webService.
+		DELETE("/{banId}").
+		To(h.DeleteBan))
 
 	return webService
 }

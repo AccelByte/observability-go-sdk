@@ -77,6 +77,35 @@ func (h *handlers) GetBan(req *restful.Request, res *restful.Response) {
 	}
 }
 
+func (h *handlers) DeleteBan(req *restful.Request, res *restful.Response) {
+	banID := req.PathParameter("banId")
+	err := h.bansDAO.DeleteBan(req.Request.Context(), banID)
+	if err != nil {
+		if err == notFoundError {
+			err = res.WriteErrorString(http.StatusNotFound, fmt.Sprintf("ban with ID %s not found", banID))
+			if err != nil {
+				trace.LogTraceError(req.Request.Context(), err, err.Error())
+				res.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			return
+		}
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	ban := Ban{
+		ID: banID,
+	}
+
+	err = res.WriteHeaderAndJson(http.StatusOK, ban, restful.MIME_JSON)
+	if err != nil {
+		trace.LogTraceError(req.Request.Context(), err, err.Error())
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
 func generateUUID() string {
 	id, _ := uuid.NewRandom()
 
