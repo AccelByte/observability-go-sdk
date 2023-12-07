@@ -23,7 +23,7 @@ func LoggerFromContext(ctx context.Context) *logrus.Entry {
 		return le.WithField(LogFieldTraceID, TraceIDFromContext(ctx))
 	}
 
-	return val
+	return val.WithField(LogFieldTraceID, TraceIDFromContext(ctx))
 }
 
 // LoggerAddField extracts the logger in the context and adds a field with the given key and value
