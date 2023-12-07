@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	LogFieldTraceID = "trace-id"
+	LogFieldTraceID = "trace_id"
 )
 
 var (
