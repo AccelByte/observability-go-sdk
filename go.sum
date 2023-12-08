@@ -12,6 +12,8 @@ github.com/AccelByte/go-restful-plugins/v4 v4.16.1/go.mod h1:jCyXnMUBotuIrwUAGhC
 github.com/AccelByte/iam-go-sdk v1.1.2/go.mod h1:M1Eplqpph/Msxm7XKgZRI+cYBCCChFdgPiVdKYupwq8=
 github.com/AccelByte/iam-go-sdk v1.8.1 h1:08ZKbemfAsEzdoxUEsXQFYkwam08OUiLL00EUcJ4l18=
 github.com/AccelByte/iam-go-sdk v1.8.1/go.mod h1:NA4n8yx/WU+BqdserLE/xaECC+2BSm6Buxli1PbYarg=
+github.com/AccelByte/observability-go-sdk v1.1.3 h1:8nb5Vo7iNoDro++VSsWTaD9L4/GdXIKRXpFgwXCsCTA=
+github.com/AccelByte/observability-go-sdk v1.1.3/go.mod h1:Mh2ho/JSoXIYIZeWNstfwGrnaDXshHxJ1QGoNwYku5I=
 github.com/AccelByte/public-source-ip v1.0.0/go.mod h1:L7zIgt3UaXkGH7NoKFCbxPdWZOVwn+d6uW/5yYRXtnQ=
 github.com/AccelByte/public-source-ip v1.0.1 h1:6/VAkksqXFmuonsvsZfIkJfsoBVy3bSy9LLHwiCqlxc=
 github.com/AccelByte/public-source-ip v1.0.1/go.mod h1:L7zIgt3UaXkGH7NoKFCbxPdWZOVwn+d6uW/5yYRXtnQ=
@@ -66,7 +68,6 @@ github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMyw
 github.com/google/go-cmp v0.5.4/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
-github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.1.5/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
@@ -119,7 +120,6 @@ github.com/prometheus/common v0.42.0/go.mod h1:xBwqVerjNdUDjgODMpudtOMwlOwf2SaTr
 github.com/prometheus/procfs v0.10.1 h1:kYK1Va/YMlutzCGazswoHKo//tZVlFpKYh+PymziUAg=
 github.com/prometheus/procfs v0.10.1/go.mod h1:nwNm2aOCAYw8uTR/9bWRREkZFxAUcWzPHWJq+XBB/FM=
 github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDNXVBh4M=
-github.com/rogpeppe/go-internal v1.11.0/go.mod h1:ddIwULY96R17DhadqLgMfk9H9tvdUzkipdSkR5nkCZA=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=

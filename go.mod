@@ -1,10 +1,11 @@
-module github.com/AccelByte/observability-go-sdk
+module github.com/gremlinflat/observability-go-sdk
 
 go 1.20
 
 require (
 	github.com/AccelByte/go-restful-plugins/v4 v4.16.1
 	github.com/AccelByte/iam-go-sdk v1.8.1
+	github.com/AccelByte/observability-go-sdk v1.1.3
 	github.com/emicklei/go-restful/v3 v3.7.3
 	github.com/google/uuid v1.3.0
 	github.com/prometheus/client_golang v1.16.0
@@ -34,7 +35,6 @@ require (
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -48,7 +48,6 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
-	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
