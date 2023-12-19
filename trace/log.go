@@ -6,6 +6,7 @@ package trace
 
 import (
 	"context"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -41,6 +42,15 @@ func ContextWithLogger(ctx context.Context, l *logrus.Logger) context.Context {
 	le := logrus.NewEntry(l)
 	le.Level = l.Level
 	return context.WithValue(ctx, logKey{}, le)
+}
+
+// LogTraceInfo logs the given message to the logger obtained from the context and records the message in the trace span.
+//
+// This function does not return any values.
+func LogTraceInfo(ctx context.Context, msg string, fields ...logrus.Fields) {
+	log := LoggerFromContext(ctx).WithFields(mergeFields(fields...))
+	log.WithField("timez", time.Now().Format(time.RFC3339)).Info(msg)
+	SpanFromContext(ctx).AddEvent(msg)
 }
 
 // NewLogEntryContext sets up a log entry with the given format and level and injects it into ctx, which are

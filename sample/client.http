@@ -1,0 +1,14 @@
+POST http://localhost:8080/sampleservice/bans HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Fahri-test",
+  "expiredAt": "2019-12-31T23:59:59.999Z"
+}
+
+
+### GET
+GET http://localhost:8080/sampleservice/bans/absc HTTP/1.1
+
+### DELETE
+DELETE http://localhost:8080/sampleservice/bans/absc HTTP/1.1

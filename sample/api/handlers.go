@@ -9,9 +9,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/google/uuid"
+	"github.com/gremlinflat/observability-go-sdk/trace"
+	"github.com/sirupsen/logrus"
 )
 
 type handlers struct {
@@ -34,6 +35,10 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 		return
 	}
 
+	trace.LogTraceInfo(ctx, "received request", logrus.Fields{
+		"request_payload": payload,
+	})
+
 	ban := Ban{
 		ID:        generateUUID(),
 		Name:      payload.Name,
@@ -42,6 +47,7 @@ func (h *handlers) AddBan(req *restful.Request, res *restful.Response) {
 
 	err = h.bansDAO.AddBan(ctx, ban)
 	if err != nil {
+		trace.LogTraceError(ctx, err, err.Error())
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}

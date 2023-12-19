@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/AccelByte/go-restful-plugins/v4 v4.16.1
 	github.com/AccelByte/iam-go-sdk v1.8.1
-	github.com/AccelByte/observability-go-sdk v1.1.3
 	github.com/emicklei/go-restful/v3 v3.7.3
 	github.com/google/uuid v1.3.0
 	github.com/prometheus/client_golang v1.16.0

@@ -15,9 +15,9 @@ import (
 	auth "github.com/AccelByte/go-restful-plugins/v4/pkg/auth/iam"
 	logger "github.com/AccelByte/go-restful-plugins/v4/pkg/logger/log"
 	"github.com/AccelByte/iam-go-sdk"
-	"github.com/AccelByte/observability-go-sdk/metrics"
-	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
+	"github.com/gremlinflat/observability-go-sdk/metrics"
+	"github.com/gremlinflat/observability-go-sdk/trace"
 )
 
 func InitWebService(basePath string) *WebService {

@@ -10,8 +10,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/AccelByte/observability-go-sdk/metrics"
-	"github.com/AccelByte/observability-go-sdk/trace"
+	"github.com/gremlinflat/observability-go-sdk/metrics"
+	"github.com/gremlinflat/observability-go-sdk/trace"
 )
 
 var (
@@ -39,6 +39,7 @@ func (b *BansDAO) AddBan(ctx context.Context, ban Ban) error {
 
 	addBanMetrics := b.dbMetrics.NewCall("add_ban")
 	defer addBanMetrics.CallEnded()
+	trace.LogTraceInfo(ctx, "adding ban to DB", nil)
 
 	{ // simulate response time and timeout error
 		sleepTime := int64(rand.Float64() * 3000)
@@ -51,6 +52,7 @@ func (b *BansDAO) AddBan(ctx context.Context, ban Ban) error {
 			return err
 		}
 	}
+	trace.LogTraceInfo(ctx, "ban added to DB", nil)
 
 	b.inMem = map[string]Ban{ban.ID: ban}
 
@@ -63,6 +65,8 @@ func (b *BansDAO) GetBan(ctx context.Context, banID string) (Ban, error) {
 
 	getBanMetrics := b.dbMetrics.NewCall("get_ban")
 	defer getBanMetrics.CallEnded()
+
+	trace.LogTraceInfo(ctx, "getting ban from DB", nil)
 
 	{ // simulate response time and timeout error
 		sleepTime := int64(rand.Float64() * 3000)
