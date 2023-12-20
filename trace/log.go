@@ -49,7 +49,7 @@ func ContextWithLogger(ctx context.Context, l *logrus.Logger) context.Context {
 // This function does not return any values.
 func LogTraceInfo(ctx context.Context, msg string, fields ...logrus.Fields) {
 	log := LoggerFromContext(ctx).WithFields(mergeFields(fields...))
-	log.WithField("timez", time.Now().Format(time.RFC3339)).Info(msg)
+	log.WithField("time", time.Now().Format(time.RFC3339)).Info(msg)
 	SpanFromContext(ctx).AddEvent(msg)
 }
 

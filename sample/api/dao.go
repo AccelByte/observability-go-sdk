@@ -10,8 +10,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/gremlinflat/observability-go-sdk/metrics"
-	"github.com/gremlinflat/observability-go-sdk/trace"
+	"github.com/AccelByte/observability-go-sdk/metrics"
+	"github.com/AccelByte/observability-go-sdk/trace"
 )
 
 var (

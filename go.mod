@@ -1,4 +1,4 @@
-module github.com/gremlinflat/observability-go-sdk
+module github.com/AccelByte/observability-go-sdk
 
 go 1.20
 

@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/AccelByte/observability-go-sdk/trace"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/google/uuid"
-	"github.com/gremlinflat/observability-go-sdk/trace"
 	"github.com/sirupsen/logrus"
 )
 

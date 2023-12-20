@@ -9,9 +9,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/gremlinflat/observability-go-sdk/metrics"
-	"github.com/gremlinflat/observability-go-sdk/sample/api"
-	"github.com/gremlinflat/observability-go-sdk/trace"
+	"github.com/AccelByte/observability-go-sdk/metrics"
+	"github.com/AccelByte/observability-go-sdk/sample/api"
+	"github.com/AccelByte/observability-go-sdk/trace"
 )
 
 const (
