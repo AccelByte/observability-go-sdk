@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	LogFieldTraceID = "trace-id"
+	LogFieldTraceID = "trace_id"
 )
 
 var (
@@ -123,7 +123,7 @@ func SpanFromContext(ctx context.Context) trace.Span {
 func TraceIDFromContext(ctx context.Context) string {
 	traceID := trace.SpanFromContext(ctx).SpanContext().TraceID().String()
 	if traceID == "" {
-		log.Println("traceID not found")
+		log.Println("trace_id not found")
 	}
 	return traceID
 }
