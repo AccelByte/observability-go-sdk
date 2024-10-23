@@ -5,6 +5,7 @@
 package metrics
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -12,8 +13,9 @@ import (
 )
 
 const (
-	dbCallLabelAction = "action"
-	dbCallLabelResult = "result"
+	dbCallLabelAction     = "action"
+	dbCallLabelResult     = "result"
+	dbMetricLabelInstance = "instance"
 
 	dbCallResultSuccess = "success"
 	dbCallResultError   = "error"
@@ -23,6 +25,18 @@ type DBMetrics struct {
 	dbName          string
 	metricsProvider Provider
 	latencyMetrics  ObserverVecMetric
+}
+
+type PostgreDBMetrics struct {
+	MaxOpenConnections ObserverVecMetric
+	OpenConnections    ObserverVecMetric
+	InUse              ObserverVecMetric
+	Idle               ObserverVecMetric
+	WaitCount          ObserverVecMetric
+	WaitDuration       ObserverVecMetric
+	MaxIdleClosed      ObserverVecMetric
+	MaxIdleTimeClosed  ObserverVecMetric
+	MaxLifetimeClosed  ObserverVecMetric
 }
 
 // NewDBMetrics returns new DB metrics.
@@ -101,4 +115,43 @@ func (e *dbCallMetrics) elapsed() time.Duration {
 		return 0
 	}
 	return e.endTime.Sub(e.startTime)
+}
+
+// NewPostgreDBMetrics returns new PostgreDBMetrics.
+func NewPostgreDBMetrics(metricsProvider Provider, dbName string) *PostgreDBMetrics {
+	l := []string{dbMetricLabelInstance}
+	return &PostgreDBMetrics{
+		MaxOpenConnections: metricsProvider.NewHistogram("postgres_db_stat_max_open_connections",
+			fmt.Sprintf("Maximum open connections on %s", dbName), prometheus.DefBuckets, l...),
+		OpenConnections: metricsProvider.NewHistogram("postgres_db_stat_open_connections",
+			fmt.Sprintf("Established connections both in use and idle on %s", dbName), prometheus.DefBuckets, l...),
+		InUse: metricsProvider.NewHistogram("postgres_db_stat_in_use",
+			fmt.Sprintf("Connections currently in use on %s", dbName), prometheus.DefBuckets, l...),
+		Idle: metricsProvider.NewHistogram("postgres_db_stat_idle",
+			fmt.Sprintf("Idle connections on %s", dbName), prometheus.DefBuckets, l...),
+		WaitCount: metricsProvider.NewHistogram("postgres_db_stat_wait_count",
+			fmt.Sprintf("Total connections waited for on %s", dbName), prometheus.DefBuckets, l...),
+		WaitDuration: metricsProvider.NewHistogram("postgres_db_stat_wait_duration",
+			fmt.Sprintf("Total time blocked waiting for a new connection on %s", dbName), prometheus.DefBuckets, l...),
+		MaxIdleClosed: metricsProvider.NewHistogram("postgres_db_stat_max_idle_closed",
+			fmt.Sprintf("Total connections closed due to SetMaxIdleConns on %s", dbName), prometheus.DefBuckets, l...),
+		MaxIdleTimeClosed: metricsProvider.NewHistogram("postgres_db_stat_max_idle_time_closed",
+			fmt.Sprintf("Total connections closed due to SetConnMaxIdleTime on %s", dbName), prometheus.DefBuckets, l...),
+		MaxLifetimeClosed: metricsProvider.NewHistogram("postgres_db_stat_max_lifetime_closed",
+			fmt.Sprintf("Total connections closed due to SetConnMaxLifetime on %s", dbName), prometheus.DefBuckets, l...),
+	}
+}
+
+func (dbMetric *PostgreDBMetrics) ObservePostgreDBMetric(dbType string, db *sql.DB) {
+	dbStats := db.Stats()
+	dbTypeLabel := map[string]string{dbMetricLabelInstance: dbType}
+	dbMetric.MaxOpenConnections.With(dbTypeLabel).Observe(float64(dbStats.MaxOpenConnections))
+	dbMetric.OpenConnections.With(dbTypeLabel).Observe(float64(dbStats.OpenConnections))
+	dbMetric.InUse.With(dbTypeLabel).Observe(float64(dbStats.InUse))
+	dbMetric.Idle.With(dbTypeLabel).Observe(float64(dbStats.Idle))
+	dbMetric.WaitCount.With(dbTypeLabel).Observe(float64(dbStats.WaitCount))
+	dbMetric.WaitDuration.With(dbTypeLabel).Observe(float64(dbStats.WaitDuration))
+	dbMetric.MaxIdleClosed.With(dbTypeLabel).Observe(float64(dbStats.MaxIdleClosed))
+	dbMetric.MaxIdleTimeClosed.With(dbTypeLabel).Observe(float64(dbStats.MaxIdleTimeClosed))
+	dbMetric.MaxLifetimeClosed.With(dbTypeLabel).Observe(float64(dbStats.MaxLifetimeClosed))
 }
